@@ -29,23 +29,33 @@ for i in range(6):
     section_url = 'https://kr.iherb.com/c/{}'.format(category[i])
     df_titles = pd.DataFrame()
     titles = []                 # titles 초기화
-    for j in range(1, pages[i]+1):       # pages[i]+1 (시간 문제 상 3으로 축소)
+    for j in range(1, 3):       # pages[i]+1 (시간 문제 상 3으로 축소)
         if j == 1:
             url = section_url
         else:
             url = section_url + '?p={}'.format(j)        # 페이지 변경
         driver.get(url)
         time.sleep(2)
-        for k in range(1, 10):
+        for k in range(1, ):
             try:
-                print('%d'%k)
+                print('%d' %k)
                 xpath_temp = '/html/body/div[7]/div/div[3]/div/div/div[1]/div[1]/div[2]/div[2]/div[{}]/div/div[2]/div[1]/a'.format(k)
                 driver.find_element('xpath', xpath_temp).click()
-                time.sleep(2)
-                print('debug01')
+                time.sleep(3)
+                print('debug%d' %k)
 
+                nutrient_data1 = driver.find_element('xpath',
+                                                    '/html/body/div[8]/article/div[2]/div/section/div[2]/div/div/div[1]/div[1]/div/div/ul').text
+                nutrient_data1 = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', nutrient_data1)
+                titles.append(nutrient_data1)
+
+                nutrient_data2 = driver.find_element('xpath',
+                                                    '/html/body/div[8]/article/div[2]/div/section/div[2]/div/div/div[1]/div[1]/div/div/p[2]').text
+                nutrient_data2 = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', nutrient_data2)
+                titles.append(nutrient_data2)
                 # title = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', title)
                 # titles.append(title)
+
                 driver.back()
                 time.sleep(5)
 
@@ -65,4 +75,3 @@ for i in range(6):
 print(df_titles.head(20))  # 상위 제목 20개 출력
 df_titles.info()
 print(df_titles['category'].value_counts())
-
