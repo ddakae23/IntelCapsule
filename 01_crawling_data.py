@@ -30,13 +30,13 @@ for i in range(6):
     # 카테고리 변경
     section_url = 'https://kr.iherb.com/c/{}'.format(category[i])
     df_titles = pd.DataFrame()
-    titles = []                 # titles 초기화
-    for j in range(1, 3):       # pages[i]+1 (시간 문제 상 3으로 축소)
+    titles = []                                          # titles 초기화
+    for j in range(1, 3):                                # pages[i]+1 (시간 문제 상 3으로 축소)
         if j == 1:
             url = section_url
         else:
             url = section_url + '?p={}'.format(j)        # 페이지 변경
-        product = 10  # 제품 수 초기화
+        product = 10                                     # 제품 수 초기화
         driver.get(url)
         time.sleep(2)
         for k in range(1, product):
@@ -58,7 +58,8 @@ for i in range(6):
                         nutrient_data2 = driver.find_element('xpath',
                                                              '/html/body/div[8]/article/div[2]/div/section/div[2]/div/div/div[1]/div[1]/div/div/p[{}]'.format(m)).text
                         nutrient_data2 = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', nutrient_data2)
-                        titles.append(nutrient_data2)
+                        if not nutrient_data2 == '':
+                            titles.append(nutrient_data2)
                     except:
                         pass
 
