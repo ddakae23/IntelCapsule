@@ -67,11 +67,10 @@ for i in range(6):
                 time.sleep(5)           # 이전 사이트로 이동할 대기 시간 부여
 
             except:
-                product = product + 1   # 제품 번호를 건너 뛴 만큼 1 씩 늘림
                 # 오류가 발생할 경우 error + 카테고리, 페이지, 제품 번호 출력
                 print('error c.{} p.{} p.{}'.format(i, j, k))
 
-    df_section_title = pd.DataFrame(titles, columns=['titles'])
+    df_section_title = pd.DataFrame(titles, columns=['Product Description'])
     df_section_title['category'] = category_kr[i]
     df_titles = pd.concat([df_titles, df_section_title], ignore_index=True)
 
