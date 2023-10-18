@@ -49,10 +49,10 @@ print("Wordsize :", wordsize)
 with open('./models/nutrients_token.pickle', 'wb') as f:        # wb : write binary
     pickle.dump(token, f)
 
-max = 0             # max 초기화
+name_max = 0             # max 초기화
 for i in range(len(tokened_x)):
-    if max < len(tokened_x[i]):
-        max = len(tokened_x[i])
+    if name_max < len(tokened_x[i]):
+        name_max = len(tokened_x[i])
 print("가장 긴 문장의 길이 : ", max)
 
 x_pad = pad_sequences(tokened_x, max)               # 모든 문장의 길이를 가장 긴 문장의 길이에 맞춤 (빈 공간의 값 = 0)
