@@ -3,6 +3,7 @@ import requests                         # HTTP 요청을 만들기 위한 라이
 from selenium import webdriver  # 웹사이트(및 웹 애플리케이션)의 유효성 검사에 사용되는 자동화 테스트 프레임워크
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 import pandas as pd
@@ -63,7 +64,11 @@ for i in range(6):
                 #     titles.append(nutrient_datas)
 
                 # 상품 설명 크롤링
-                # nutrient_data = driver.find_elements(By.XPATH, '//div[@itemprop="description"]/ul/li')
+                nutrient_data = driver.find_elements(By.XPATH, '//div[@itemprop="description"]/p')
+                for data in nutrient_data:
+                    nutrient_datas = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', data.text)
+                    print(data.text, end='')
+                    titles.append(nutrient_datas)
 
                 # 제품 설명 전처리 (한글, 영어(대,소문자), 숫자만 수집. 그 외는 공백 처리)
                 nutrient_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', nutrient_data)
