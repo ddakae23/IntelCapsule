@@ -60,23 +60,28 @@ for i in range(6):
                 # titles.append(nutrient_data)
 
                 # 상품 설명 요약 크롤링
+                # dt = ''
                 # nutrient_data = driver.find_elements(By.XPATH, '//div[@itemprop="description"]/ul')
                 # for data in nutrient_data:
-                #     nutrient_datas = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', data.text)
-                #     print(data.text, end='')
-                #     titles.append(nutrient_datas)
+                #     if not data.text == '':
+                #         data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', data.text)
+                #         dt += data
+                # print(dt)
+                # titles.append(dt)
 
                 # 상품 설명 크롤링
+                # dt = ''
                 # nutrient_data = driver.find_elements(By.XPATH, '//div[@itemprop="description"]/p')
                 # if not nutrient_data == '':
-                # for data in nutrient_data:
-                #     if not data.text == '':
-                #         nutrient_datas = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', data.text)
-                #         print(data.text)
-                #         titles.append(nutrient_datas)
-
-                driver.back()  # 사이트 뒤로 가기
-                time.sleep(7)  # 이전 사이트로 이동할 대기 시간 부여
+                #     for data in nutrient_data:
+                #         if not data.text == '':
+                #             data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', data.text)
+                #             dt += data
+                #     print(dt)
+                #     titles.append(dt)
+                #
+                # driver.back()  # 사이트 뒤로 가기
+                # time.sleep(7)  # 이전 사이트로 이동할 대기 시간 부여
 
             except:
                 # 오류가 발생할 경우 error + 카테고리, 페이지, 제품 번호 출력
