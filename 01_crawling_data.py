@@ -49,7 +49,7 @@ for i in range(6):
                 xpath_temp = '/html/body/div[7]/div/div[3]/div/div/div[1]/div[1]/div[2]/div[2]/div[{}]/div/div[2]/div[1]/a'.format(
                     k)
                 driver.find_element('xpath', xpath_temp).click()  # 클릭 시 사이트로 이동
-                time.sleep(7)  # 클릭 후 사이트로 이동할 대기 시간 부여
+                time.sleep(5)  # 클릭 후 사이트로 이동할 대기 시간 부여
                 print('count = %d' % k)
 
                 # 상품 설명 전체 크롤링
@@ -79,9 +79,9 @@ for i in range(6):
                 #             dt += data
                 #     print(dt)
                 #     titles.append(dt)
-                #
-                # driver.back()  # 사이트 뒤로 가기
-                # time.sleep(7)  # 이전 사이트로 이동할 대기 시간 부여
+
+                driver.back()  # 사이트 뒤로 가기
+                time.sleep(5)  # 이전 사이트로 이동할 대기 시간 부여
 
             except:
                 # 오류가 발생할 경우 error + 카테고리, 페이지, 제품 번호 출력
@@ -96,6 +96,6 @@ for i in range(6):
         './crawling_data/nutrients_{}_{}.csv'.format(category[i], datetime.datetime.now().strftime('%Y%m%d')),
         index=False)
 
-print(df_titles.head(20))  # 상위 제목 20개 출력
+# print(df_titles.head(20))  # 상위 제목 20개 출력
 df_titles.info()
-print(df_titles['category'].value_counts())
+# print(df_titles['category'].value_counts())
