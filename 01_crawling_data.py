@@ -55,6 +55,9 @@ for i in range(6):
                 # 상품 설명 전체 크롤링
                 # nutrient_data = driver.find_element('xpath',
                 #                                     '/html/body/div[8]/article/div[2]/div/section/div[2]/div/div/div[1]/div[1]/div/div').text
+                # 제품 설명 전처리 (한글, 영어(대,소문자), 숫자만 수집. 그 외는 공백 처리)
+                # nutrient_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', nutrient_data)
+                # titles.append(nutrient_data)
 
                 # 상품 설명 요약 크롤링
                 # nutrient_data = driver.find_elements(By.XPATH, '//div[@itemprop="description"]/ul')
@@ -66,14 +69,11 @@ for i in range(6):
                 # 상품 설명 크롤링
                 # nutrient_data = driver.find_elements(By.XPATH, '//div[@itemprop="description"]/p')
                 # if not nutrient_data == '':
-                #     for data in nutrient_data:
+                # for data in nutrient_data:
+                #     if not data.text == '':
                 #         nutrient_datas = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', data.text)
                 #         print(data.text)
                 #         titles.append(nutrient_datas)
-
-                # 제품 설명 전처리 (한글, 영어(대,소문자), 숫자만 수집. 그 외는 공백 처리)
-                nutrient_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', nutrient_data)
-                titles.append(nutrient_data)
 
                 driver.back()  # 사이트 뒤로 가기
                 time.sleep(7)  # 이전 사이트로 이동할 대기 시간 부여
