@@ -64,11 +64,12 @@ for i in range(6):
                 #     titles.append(nutrient_datas)
 
                 # 상품 설명 크롤링
-                nutrient_data = driver.find_elements(By.XPATH, '//div[@itemprop="description"]/p')
-                for data in nutrient_data:
-                    nutrient_datas = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', data.text)
-                    print(data.text, end='')
-                    titles.append(nutrient_datas)
+                # nutrient_data = driver.find_elements(By.XPATH, '//div[@itemprop="description"]/p')
+                # if not nutrient_data == '':
+                #     for data in nutrient_data:
+                #         nutrient_datas = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', data.text)
+                #         print(data.text)
+                #         titles.append(nutrient_datas)
 
                 # 제품 설명 전처리 (한글, 영어(대,소문자), 숫자만 수집. 그 외는 공백 처리)
                 nutrient_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', nutrient_data)
