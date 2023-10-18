@@ -1,10 +1,10 @@
-from bs4 import BeautifulSoup           # HTML과 XML 문서들의 구문을 분석
-import requests                         # HTTP 요청을 만들기 위한 라이브러리
-from selenium import webdriver  # 웹사이트(및 웹 애플리케이션)의 유효성 검사에 사용되는 자동화 테스트 프레임워크
+import requests
+from bs4 import BeautifulSoup
+from selenium import webdriver              # 웹사이트(및 웹 애플리케이션)의 유효성 검사에 사용되는 자동화 테스트 프레임워크
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options as ChromeOptions
-from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 import pandas as pd
 import re
@@ -41,16 +41,15 @@ for i in range(6):
         driver.get(url)
         time.sleep(3)
 
-        product = driver.find_elements('CLASS_NAME', 'product-cell-container')
-        product = len(product)  # 제품 수 만큼 for 문 반복 (마지막 페이지 제품 수가 48개 미만)
+        product = driver.find_elements(By.CLASS_NAME, 'product-cell-container')
+        product = len(product) + 1  # 제품 수 만큼 for 문 반복 (마지막 페이지 제품 수가 48개 미만)
 
         for k in range(1, product):
             try:
-                xpath_temp = '/html/body/div[7]/div/div[3]/div/div/div[1]/div[1]/div[2]/div[2]/div[{}]/div/div[2]/div[1]/a'.format(
-                    k)
+                xpath_temp = '/html/body/div[7]/div/div[3]/div/div/div[1]/div[1]/div[2]/div[2]/div[{}]/div/div[2]/div[1]/a'.format(k)
                 driver.find_element('xpath', xpath_temp).click()  # 클릭 시 사이트로 이동
                 time.sleep(5)  # 클릭 후 사이트로 이동할 대기 시간 부여
-                print('count = %d' % k)
+                print('count = %d' %k)
 
                 # 상품 설명 전체 크롤링
                 # nutrient_data = driver.find_element('xpath',
@@ -60,14 +59,14 @@ for i in range(6):
                 # titles.append(nutrient_data)
 
                 # 상품 설명 요약 크롤링
-                # dt = ''
-                # nutrient_data = driver.find_elements(By.XPATH, '//div[@itemprop="description"]/ul')
-                # for data in nutrient_data:
-                #     if not data.text == '':
-                #         data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', data.text)
-                #         dt += data
-                # print(dt)
-                # titles.append(dt)
+                dt = ''
+                nutrient_data = driver.find_elements(By.XPATH, '//div[@itemprop="description"]/ul')
+                for data in nutrient_data:
+                    if not data.text == '':
+                        data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', data.text)
+                        dt += data
+                print(dt)
+                titles.append(dt)
 
                 # 상품 설명 크롤링
                 # dt = ''
