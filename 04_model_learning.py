@@ -4,7 +4,7 @@ from tensorflow.keras.models import *
 from tensorflow.keras.layers import *
 
 X_train, X_test, Y_train, Y_test = np.load(
-    '../crawling_data/nutrients_data_max_304_wordsize_8602.npy', allow_pickle=True)
+    './crawling_data/nutrients_data_max_304_wordsize_8602.npy', allow_pickle=True)
 print(X_train.shape, Y_train.shape)
 print(X_test, Y_test)
 
