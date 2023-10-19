@@ -3,7 +3,7 @@ import glob                 # 특정 파일 패턴이나 이름과 일치하는 
 import datetime
 
 # 반복문에서 저장한 cvs 파일을 불러옴
-data_path = glob.glob('../crawling_data/*')
+data_path = glob.glob('./crawling_data/*')
 print(data_path)
 
 df = pd.DataFrame()
@@ -19,6 +19,6 @@ print(df.head())
 print(df['category'].value_counts())
 
 df.info()
-df.to_csv('../crawling_data/nutrients_effects_{}.csv'.format(
+df.to_csv('./crawling_data/nutrients_effects_{}.csv'.format(
     datetime.datetime.now().strftime('%Y%m%d')), index=False)
 
