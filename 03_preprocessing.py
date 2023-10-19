@@ -9,7 +9,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.utils import to_categorical           # 정수형(integer) 레이블을 원-핫 인코딩(one-hot encoding) 벡터로 변환
 # tensorflow ver 2.7.0 downgrade!
 
-df = pd.read_csv('../crawling_data/nutrients_effects_20231019.csv')
+df = pd.read_csv('./crawling_data/nutrients_effects_20231019.csv')
 
 okt = Okt()
 X = df['effect']
@@ -49,7 +49,7 @@ X = pd.Series(X)
 X = X.dropna()
 Y = Y.dropna()
 
-X.to_csv('../crawling_data/preprocessing.csv',index=False)
+X.to_csv('./crawling_data/preprocessing.csv',index=False)
 
 encoder = LabelEncoder()
 labeled_y = encoder.fit_transform(Y)
@@ -57,7 +57,7 @@ label = encoder.classes_
 print(labeled_y[:3])
 onehot_y = to_categorical(labeled_y)
 
-with open('../models/encoder.pickle', 'wb') as f:
+with open('./models/encoder.pickle', 'wb') as f:
     pickle.dump(encoder, f)
 
 token = Tokenizer()
@@ -67,7 +67,7 @@ wordsize = len(token.word_index) + 1
 print("Tokened_X :", tokened_x[0:3])
 print("Wordsize :", wordsize)
 
-with open('../models/nutrients_token.pickle', 'wb') as f:        # wb : write binary
+with open('./models/nutrients_token.pickle', 'wb') as f:        # wb : write binary
     pickle.dump(token, f)
 
 max = 0             # max 초기화
@@ -85,4 +85,4 @@ print(X_train.shape, Y_train.shape)
 print(X_test.shape, Y_test.shape)
 
 xy = X_train, X_test, Y_train, Y_test
-np.save('../crawling_data/nutrients_data_max_{}_wordsize_{}'.format(max, wordsize), xy)
+np.save('./crawling_data/nutrients_data_max_{}_wordsize_{}'.format(max, wordsize), xy)
