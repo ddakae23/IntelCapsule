@@ -10,10 +10,10 @@ import pickle
 import os
 
 pd.set_option('display.unicode.east_asian_width',True)
-df_descriptions = pd.read_csv('./crawling_data/nutrition_info_호흡기계_last.csv')
+df_descriptions = pd.read_csv('./crawling_data/nutrients_effects_20231019.csv')
 df_descriptions.dropna(inplace=True)
 
-X = df_descriptions['description']
+X = df_descriptions['effect']
 Y = df_descriptions['category']
 
 okt = Okt()
@@ -25,7 +25,7 @@ for i in range(len(X)):
     except:
         continue
 
-stopwords = pd.read_csv('./datasets/stopwords.csv', index_col=0)
+stopwords = pd.read_csv('./stopwords.csv', index_col=0)
 for i in range(len(X)):
     try:
         words = []
