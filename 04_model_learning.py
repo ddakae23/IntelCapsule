@@ -9,7 +9,7 @@ print(X_train.shape, Y_train.shape)
 print(X_test, Y_test)
 
 model = Sequential()
-# input_dim = 5644 / input_length = max
+# input_dim = wordsize / input_length = max
 model.add(Embedding(8602, 300, input_length=304))
 model.add(Conv1D(32, kernel_size=5, padding='same', activation='relu'))
 model.add(MaxPooling1D(pool_size=1))
