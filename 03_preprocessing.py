@@ -4,40 +4,60 @@ import pickle           # 파이썬에서 사용하는 dic, list, class과 같�
 from sklearn.model_selection import train_test_split        # pip install scikit-learn
 from sklearn.preprocessing import LabelEncoder              # 범주형 변수를 숫자 형식으로 변환
 from konlpy.tag import Okt                                  # 한국어 형태소 분석
-# tensorflow ver 2.7.0 downgrade!
-from tensorflow.keras.utils import to_categorical           # 정수형(integer) 레이블을 원-핫 인코딩(one-hot encoding) 벡터로 변환
 from tensorflow.keras.preprocessing.text import Tokenizer   # 자연어 처리에서 입력 문장을 일정한 단위로 분할
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.utils import to_categorical           # 정수형(integer) 레이블을 원-핫 인코딩(one-hot encoding) 벡터로 변환
+# tensorflow ver 2.7.0 downgrade!
 
-df = pd.read_csv('./crawling_data/nutrients_effects_{}.csv')
+df = pd.read_csv('./crawling_data/nutrients_effects_20231019.csv')
 
+okt = Okt()
 X = df['effect']
 Y = df['category']
+
+for i in range(len(X)):
+    try:
+        X[i] = okt.morphs(X[i], stem=True)
+    except:
+        print('error okt: ', i, len(X))
+
+stopwords = pd.read_csv('../stopwords.csv', index_col=0)
+for i in range(len(X)):                                         # title 수 만큼 반복
+    try:
+        words = []
+        for j in range(len(X[i])):                                  # 형태소? 수 만큼 반복
+            if len(X[i][j]) > 1:                                    # 한글자 제거
+                if X[i][j] not in list(stopwords['stopword']):      # 불용어 확인
+                    words.append(X[i][j])
+        if len(words) >=10:                                         # 단어가 10개 미만일 경우 제거
+            X[i] = ' '.join(words)
+    except:
+        print('error stopword: ', i, len(X))
+
+from difflib import SequenceMatcher
+X = np.array(X)                                                     # effect 데이터를 배열로 변환
+for i in range(len(X)-1):
+    fst = X[i]
+    scd = X[i+1]
+    ratio = SequenceMatcher(None, fst, scd).ratio()                 # 두 문장을 비교하여 유사성을 구함
+    if ratio >= 0.9:                                                # 일치율이 90% 이상일 경우 두번째 문장을 지움
+        scd = None
+        print('remove similar data,{} :{}'.format(i+1, X[i]))
+
+X = pd.Series(X)
+X = X.dropna()
+Y = Y.dropna()
+
+X.to_csv('./crawling_data/preprocessing.csv',index=False)
 
 encoder = LabelEncoder()
 labeled_y = encoder.fit_transform(Y)
 label = encoder.classes_
 print(labeled_y[:3])
+onehot_y = to_categorical(labeled_y)
 
 with open('./models/encoder.pickle', 'wb') as f:
     pickle.dump(encoder, f)
-
-    okt = Okt()
-
-for i in range(len(X)):
-    X[i] = okt.morphs(X[i], stem=True)
-# print(X)
-
-# 불용어 리스트 불러옴 (인덱스 제거)
-stopwords = pd.read_csv('./stopwords.csv', index_col=0)
-for j in range(len(X)):                                         # title 수 만큼 반복
-    words = []
-    for i in range(len(X[j])):                                  # 형태소? 수 만큼 반복
-        if len(X[j][i]) > 1:                                    # 한글자 제거
-            if X[j][i] not in list(stopwords['stopword']):      # 불용어 확인
-                words.append(X[j][i])
-    X[j] = ' '.join(words)
-# print(X)
 
 token = Tokenizer()
 token.fit_on_texts(X)                               # 각 형태소에 라벨 부여
@@ -49,12 +69,12 @@ print("Wordsize :", wordsize)
 with open('./models/nutrients_token.pickle', 'wb') as f:        # wb : write binary
     pickle.dump(token, f)
 
-name_max = 0             # max 초기화
+max = 0             # max 초기화
 for i in range(len(tokened_x)):
-    if name_max < len(tokened_x[i]):
-        name_max = len(tokened_x[i])
+    if max < len(tokened_x[i]):
+        max = len(tokened_x[i])
 print("가장 긴 문장의 길이 : ", max)
-
+#
 x_pad = pad_sequences(tokened_x, max)               # 모든 문장의 길이를 가장 긴 문장의 길이에 맞춤 (빈 공간의 값 = 0)
 # print(x_pad[:3])
 
