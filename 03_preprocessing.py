@@ -21,28 +21,34 @@ for i in range(len(X)):
     except:
         print('error okt: ', i, len(X))
 
-stopwords = pd.read_csv('../stopwords.csv', index_col=0)
-for i in range(len(X)):                                         # title 수 만큼 반복
+stopwords = pd.read_csv('./stopwords.csv', index_col=0)
+# effect 수 만큼 반복
+for i in range(len(X)):                                             # title 수 만큼 반복
     try:
         words = []
+        # i번째 줄의 길이만큼 반복
         for j in range(len(X[i])):                                  # 형태소? 수 만큼 반복
             if len(X[i][j]) > 1:                                    # 한글자 제거
                 if X[i][j] not in list(stopwords['stopword']):      # 불용어 확인
                     words.append(X[i][j])
         if len(words) >=10:                                         # 단어가 10개 미만일 경우 제거
             X[i] = ' '.join(words)
+        else : X[i] = None
     except:
         print('error stopword: ', i, len(X))
 
 from difflib import SequenceMatcher
 X = np.array(X)                                                     # effect 데이터를 배열로 변환
-for i in range(len(X)-1):
-    fst = X[i]
-    scd = X[i+1]
-    ratio = SequenceMatcher(None, fst, scd).ratio()                 # 두 문장을 비교하여 유사성을 구함
-    if ratio >= 0.9:                                                # 일치율이 90% 이상일 경우 두번째 문장을 지움
-        scd = None
-        print('remove similar data,{} :{}'.format(i+1, X[i]))
+for i in range(len(X)):
+    if X[i] is not None:
+        fst = X[i]
+        for j in range(len(X)):
+            if i != j and X[j] is not None:
+                scd = X[j]
+                ratio = SequenceMatcher(None, fst, scd).ratio()                 # 두 문장을 비교하여 유사성을 구함
+                if ratio >= 0.9:                                                # 일치율이 90% 이상일 경우 두번째 문장을 지움
+                    print('remove similar data,{} :{}'.format(j, scd))
+                    scd = None
 
 X = pd.Series(X)
 X = X.dropna()
