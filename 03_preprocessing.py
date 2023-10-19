@@ -33,13 +33,18 @@ for i in range(len(X)):                                             # title 수 
                     words.append(X[i][j])
         if len(words) >=10:                                         # 단어가 10개 미만일 경우 제거
             X[i] = ' '.join(words)
-        else : X[i] = None
+        else :
+            X[i] = None
+            Y[i] = None
     except:
         print('error stopword: ', i, len(X))
 
+print(len(X), len(Y))
+
 from difflib import SequenceMatcher
-X = np.array(X)                                                     # effect 데이터를 배열로 변환
-for i in range(len(X)):
+X = np.array(X)
+# effect 데이터를 배열로 변환
+for i in range(len(X)-10):
     if X[i] is not None:
         fst = X[i]
         for j in range(i-10, i+10):
@@ -48,7 +53,8 @@ for i in range(len(X)):
                 ratio = SequenceMatcher(None, fst, scd).ratio()                 # 두 문장을 비교하여 유사성을 구함
                 if ratio >= 0.9:                                                # 일치율이 90% 이상일 경우 두번째 문장을 지움
                     print('remove similar data,{} :{}'.format(j, scd))
-                    scd = None
+                    Y[j] = None
+                    X[j] = None
 
 X = pd.Series(X)
 X = X.dropna()
