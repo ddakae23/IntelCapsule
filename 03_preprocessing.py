@@ -42,7 +42,7 @@ X = np.array(X)                                                     # effect 데
 for i in range(len(X)):
     if X[i] is not None:
         fst = X[i]
-        for j in range(len(X)):
+        for j in range(i-10, i+10):
             if i != j and X[j] is not None:
                 scd = X[j]
                 ratio = SequenceMatcher(None, fst, scd).ratio()                 # 두 문장을 비교하여 유사성을 구함
