@@ -15,6 +15,7 @@ okt = Okt()
 X = df['effect']
 Y = df['category']
 
+
 for i in range(len(X)):
     try:
         X[i] = okt.morphs(X[i], stem=True)
@@ -65,6 +66,7 @@ X.to_csv('./crawling_data/preprocessing.csv',index=False)
 encoder = LabelEncoder()
 labeled_y = encoder.fit_transform(Y)
 label = encoder.classes_
+print(label)
 print(labeled_y[:3])
 onehot_y = to_categorical(labeled_y)
 
