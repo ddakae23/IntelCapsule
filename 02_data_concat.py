@@ -5,7 +5,7 @@ import datetime
 category = ['seasonal-allergies', 'sleep', 'weight-loss', 'childrens-health', 'mens-health', 'womens-health']
 
 for i in range(6):
-    df = pd.read_csv('../crawling_data/nutrients_{}_20231018.csv'.format(category[i]))
+    df = pd.read_csv('./crawling_data/nutrients_{}_20231018.csv'.format(category[i]))
     X = df['effect']
     Y = df['category']
     df = df.dropna()
@@ -13,7 +13,7 @@ for i in range(6):
     df.to_csv('../crawling_data/remove_null/nutrients_{}_{}.csv'.format(category[i], datetime.datetime.now().strftime('%Y%m%d')),
         index=False)
 
-data_path = glob.glob('../crawling_data/remove_null/*')
+data_path = glob.glob('./crawling_data/remove_null/*')
 print(data_path)
 
 df = pd.DataFrame()
@@ -23,5 +23,5 @@ for path in data_path:
 print(df.head())
 print(df['category'].value_counts())
 df.info()
-df.to_csv('../crawling_data/nutrients_effects_{}.csv'.format(
+df.to_csv('./crawling_data/nutrients_effects_{}.csv'.format(
     datetime.datetime.now().strftime('%Y%m%d')), index=False)
