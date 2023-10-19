@@ -25,7 +25,7 @@ category = ['eye-vision', 'hair-skin-nails','heart','immune-support','pain-relie
 category_ko = ['눈-시력','모발-피부-손톱','심혈관계','면역계','통증 완화','호흡기계']
 pages = [9, 17, 17, 17, 9, 3]
 
-for c in range(4,len(category)):
+for c in range(len(category)-1):
     descriptions = []
     df_descriptions = pd.DataFrame()
     category_url = 'https://kr.iherb.com/c/{}'.format(category[c])
@@ -42,18 +42,21 @@ for c in range(4,len(category)):
         for idx in range(1,products+1):
             try:
                 product_url = driver.find_element(By.XPATH,'/html/body/div[7]/div/div[3]/div/div/div[1]/div[1]/div[2]/div[2]/div[{}]/div/div[2]/div[1]/a'.format(idx)).click()
-                time.sleep(3)
+                time.sleep(5)
                 description_text = ''
-                description_list = driver.find_elements(By.XPATH,'/html/body/div[8]/article/div[2]/div/section/div[2]/div/div/div[1]/div[1]/div/div/ul/li')
-                # description_p = driver.find_elements(By.XPATH,'/html/body/div[8]/article/div[2]/div/section/div[2]/div/div/div[1]/div[1]/div/div/p')
-                if description_list is not None:
-                    for description in description_list:
-                        description = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ',description.text)
-                        description_text += ' '+description
-                # if description_p is not None:
-                #     for description in description_p:
+                # description_list = driver.find_elements(By.XPATH,'/html/body/div[8]/article/div[2]/div/section/div[2]/div/div/div[1]/div[1]/div/div/ul/li')
+                description_p = driver.find_elements(By.XPATH,'/html/body/div[8]/article/div[2]/div/section/div[2]/div/div/div[1]/div[1]/div/div/p')
+                # if description_list is not None:
+                #     for description in description_list:
                 #         description = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ',description.text)
-                #         description_text += ' '+description
+                #         description_text += description+' '
+                if len(description_p) > 1:
+                    description_p = description_p[:-1]
+                for description in description_p:
+                    if description.text is None:
+                        continue
+                    description = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ',description.text)
+                    description_text += description+' '
                 print(description_text)
                 descriptions.append(description_text)
 
@@ -68,13 +71,13 @@ for c in range(4,len(category)):
             df_descriptions = pd.concat([df_descriptions, df_description],ignore_index=True)
             if not os.path.isdir('./crawling_data'):
                 os.mkdir('crawling_data')
-            df_descriptions.to_csv('./crawling_data/nutrition_{}_{}.csv'.format(category_ko[c], page), index=False)
+            df_descriptions.to_csv('./crawling_data/nutrition_info_{}_{}.csv'.format(category_ko[c], page), index=False)
             descriptions = []
 
     df_description = pd.DataFrame(descriptions, columns=['description'])
     df_description['category'] = category_ko[c]
     df_descriptions = pd.concat([df_descriptions, df_description], ignore_index=True)
-    df_descriptions.to_csv('./crawling_data/nutrition_{}_last.csv'.format(category_ko[c]), index=False)
+    df_descriptions.to_csv('./crawling_data/nutrition_info_{}_last.csv'.format(category_ko[c]), index=False)
 
 
 

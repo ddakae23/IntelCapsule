@@ -4,12 +4,12 @@ import pickle           # 파이썬에서 사용하는 dic, list, class과 같�
 from sklearn.model_selection import train_test_split        # pip install scikit-learn
 from sklearn.preprocessing import LabelEncoder              # 범주형 변수를 숫자 형식으로 변환
 from konlpy.tag import Okt                                  # 한국어 형태소 분석
-# tensorflow ver 2.7.0 downgrade!
-from tensorflow.keras.utils import to_categorical           # 정수형(integer) 레이블을 원-핫 인코딩(one-hot encoding) 벡터로 변환
 from tensorflow.keras.preprocessing.text import Tokenizer   # 자연어 처리에서 입력 문장을 일정한 단위로 분할
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.utils import to_categorical           # 정수형(integer) 레이블을 원-핫 인코딩(one-hot encoding) 벡터로 변환
+# tensorflow ver 2.7.0 downgrade!
 
-df = pd.read_csv('./crawling_data/nutrients_effects_{}.csv')
+df = pd.read_csv('./crawling_data/nutrients_effects_20231019.csv')
 
 X = df['effect']
 Y = df['category']
@@ -22,7 +22,9 @@ print(labeled_y[:3])
 with open('./models/encoder.pickle', 'wb') as f:
     pickle.dump(encoder, f)
 
-    okt = Okt()
+onehot_y = to_categorical(labeled_y)
+
+okt = Okt()
 
 for i in range(len(X)):
     X[i] = okt.morphs(X[i], stem=True)
@@ -49,10 +51,10 @@ print("Wordsize :", wordsize)
 with open('./models/nutrients_token.pickle', 'wb') as f:        # wb : write binary
     pickle.dump(token, f)
 
-name_max = 0             # max 초기화
+max = 0             # max 초기화
 for i in range(len(tokened_x)):
-    if name_max < len(tokened_x[i]):
-        name_max = len(tokened_x[i])
+    if max < len(tokened_x[i]):
+        max = len(tokened_x[i])
 print("가장 긴 문장의 길이 : ", max)
 
 x_pad = pad_sequences(tokened_x, max)               # 모든 문장의 길이를 가장 긴 문장의 길이에 맞춤 (빈 공간의 값 = 0)
