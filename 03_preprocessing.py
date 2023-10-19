@@ -35,13 +35,12 @@ for i in range(len(X)):                                         # title 수 만�
         print('error stopword: ', i, len(X))
 
 from difflib import SequenceMatcher
-
 X = np.array(X)                                                     # effect 데이터를 배열로 변환
 for i in range(len(X)-1):
     fst = X[i]
     scd = X[i+1]
-    ratio = SequenceMatcher(None, fst, scd).ratio()
-    if ratio >= 0.9:
+    ratio = SequenceMatcher(None, fst, scd).ratio()                 # 두 문장을 비교하여 유사성을 구함
+    if ratio >= 0.9:                                                # 일치율이 90% 이상일 경우 두번째 문장을 지움
         scd = None
         print('remove similar data,{} :{}'.format(i+1, X[i]))
 
