@@ -25,7 +25,7 @@ headers = {
 
 category = ['seasonal-allergies', 'sleep', 'weight-loss', 'childrens-health', 'mens-health', 'womens-health']
 # category = ['anti-aging-longevity', 'ayurveda', 'bladder', 'bone-joint-cartilage', 'brain-cognitive', 'circulatory-support', 'colon', 'common-cold-flu', 'detox-cleanse', 'digestive-support', 'ears', 'energy', 'eye-vision', 'hair-skin-nails', 'heart', 'immune-support', 'pain-relief', 'respiratory-support', 'seasonal-allergies', 'sleep', 'weight-loss', 'childrens-health', 'mens-health', 'womens-health']
-category_kr = ['계절성 알레르기', '불면증', '체중 조절', '어린이 건강', '남성 건강', '여성 건강']
+category_kr = ['계절성 알레르기', '불면증', '체중 관리', '어린이 건강', '남성 건강', '여성 건강']
 # category_kr = ['노화_장수', '아유르베다', '방광', '뼈_관절_연골', '두뇌_인지', '순환기계', '장건강', '감기_독감', '디톡스_클렌징', '소화기계', '귀', '에너지', '눈_시력', '모발_피부_손발톱', '심혈관계', '면역기계', '통증완화', '호흡기계', '계절성 알레르기', '불면증', '체중 조절', '어린이 건강', '남성 건강', '여성 건강']
 # pages = [14, 13, 14, 16, 8, 16]  # 각 카테고리 별 총 페이지 수
 df_nutrients = pd.DataFrame()
@@ -59,14 +59,15 @@ for i in range(len(category)):                          # 카테고리 변경
                 if y.get('href') is not None:
                     product_url.append(y.get('href'))
         del product_url[0]                  # 관계 없는 url 삭제
-
-        time.sleep(2)
         for k in range(0, 48):          # 마지막 페이지 제품 수가 48개 미만일 경우 range=(0, product)
             try:
                 driver.get(product_url[k])
+                print('debug01')
+                time.sleep(1)
                 product_name = driver.find_element(By.XPATH, '//*[@id="name"]').text
+                print('debug02')
                 product_names.append(product_name)
-
+                print(product_name)
                 ## 영양제 효과 크롤링. 셋 중 하나만 실행 ##
                 # 1. 상품 설명 전체 크롤링
                 # nutrient_data = driver.find_element('xpath',
