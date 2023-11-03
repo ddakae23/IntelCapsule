@@ -26,7 +26,6 @@ headers = {
 category = ['seasonal-allergies', 'sleep', 'weight-loss', 'childrens-health', 'mens-health', 'womens-health']
 category_kr = ['계절성 알레르기', '불면증', '체중 조절', '어린이 건강', '남성 건강', '여성 건강']
 # pages = [14, 13, 14, 16, 8, 16]  # 각 카테고리 별 총 페이지 수
-pages = [13, 13, 13, 13, 8, 13]  # 학습을 위해 최대 페이지를 중간 값인 13 페이지로 제한함
 df_titles = pd.DataFrame()
 
 for i in range(6):
@@ -34,7 +33,7 @@ for i in range(6):
     df_titles = pd.DataFrame()
     titles = []  # titles 초기화
     product_names = []
-    for j in range(1, pages[i]+1):
+    for j in range(1, 8):       # 이후 예측 데이터를 위해 최대 페이지 수를 7 페이지로 제한
         section_url = url + 'c/{}?p={}'.format(category[i], j)  # 페이지 변경
         driver.get(section_url)
         time.sleep(3)
