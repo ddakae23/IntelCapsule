@@ -91,12 +91,11 @@ for i in range(6):                          # 카테고리 변경
                 #             dt += data
                 #     print(dt)
                 #     titles.append(dt)
-
             except:
                 # 오류가 발생할 경우 error + 카테고리, 페이지, 제품 번호 출력
                 print('error c.{} p.{} p.{}'.format(category[i], j, k))
 
-    df_section_title = pd.DataFrame({titles: 'effect'}, {product_names: 'name'})
+    df_section_title = pd.DataFrame({'effect': titles, 'name': product_names})
     df_section_title['category'] = category_kr[i]
     df_titles = pd.concat([df_titles, df_section_title], ignore_index=True)
 
