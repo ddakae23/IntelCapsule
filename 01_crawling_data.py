@@ -26,15 +26,15 @@ headers = {
 category = ['seasonal-allergies', 'sleep', 'weight-loss', 'childrens-health', 'mens-health', 'womens-health']
 category_kr = ['계절성 알레르기', '불면증', '체중 조절', '어린이 건강', '남성 건강', '여성 건강']
 # pages = [14, 13, 14, 16, 8, 16]  # 각 카테고리 별 총 페이지 수
-df_titles = pd.DataFrame()
+df_nutrients = pd.DataFrame()
 
 for i in range(6):                          # 카테고리 변경
     # 데이터 프레임 및 리스트 초기화
-    df_titles = pd.DataFrame()
+    df_nutrient = pd.DataFrame()
     titles = []
     product_names = []
 
-    for j in range(1, 8):                   # 이후 예측 데이터를 위해 최대 페이지 수를 7 페이지로 제한
+    for j in range(1, 5):                   # 이후 예측 데이터를 위해 최대 페이지 수를 5 페이지로 제한
         section_url = url + 'c/{}?p={}'.format(category[i], j)
         driver.get(section_url)             # 페이지 변경
         time.sleep(3)
@@ -61,7 +61,7 @@ for i in range(6):                          # 카테고리 변경
         for k in range(0, product):
             try:
                 driver.get(product_url[k])
-                product_name = driver.find_element(By.XPATH, '//*[@id="name"]')
+                product_name = driver.find_element(By.XPATH, '//*[@id="name"]').text
                 product_names.append(product_name)
 
                 ## 영양제 효과 크롤링. 셋 중 하나만 실행 ##
@@ -95,15 +95,18 @@ for i in range(6):                          # 카테고리 변경
                 # 오류가 발생할 경우 error + 카테고리, 페이지, 제품 번호 출력
                 print('error c.{} p.{} p.{}'.format(category[i], j, k))
 
-    df_section_title = pd.DataFrame({'effect': titles, 'name': product_names})
-    df_section_title['category'] = category_kr[i]
-    df_titles = pd.concat([df_titles, df_section_title], ignore_index=True)
+    df_nutrient = pd.DataFrame({'effect': titles, 'name': product_names})
+    df_nutrient['category'] = category_kr[i]
+    df_nutrients = pd.concat([df_nutrients, df_nutrient], ignore_index=True)
 
     # crawling 폴더에 Nutrients_(카테고리)_(년월일).cvs 파일로 저장
-    df_titles.to_csv(
+    df_nutrient.to_csv(
         './crawling_data/nutrients_{}_{}.csv'.format(category[i], datetime.datetime.now().strftime('%Y%m%d')),
         index=False)
 
 # print(df_titles.head(20))  # 상위 제목 20개 출력
-df_titles.info()
+df_nutrients.info()
+df_nutrients.to_csv(
+        './crawling_data/nutrients_{}.csv'.format(datetime.datetime.now().strftime('%Y%m%d')),
+        index=False)
 # print(df_titles['category'].value_counts())
