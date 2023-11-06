@@ -4,13 +4,13 @@ from tensorflow.keras.models import *
 from tensorflow.keras.layers import *
 
 X_train, X_test, Y_train, Y_test = np.load(
-    './crawling_data/nutrients_data_max_304_wordsize_8308.npy', allow_pickle=True)
+    './crawling_data/nutrients_data_max_170_wordsize_2810.npy', allow_pickle=True)
 print(X_train.shape, Y_train.shape)
 print(X_test, Y_test)
 
 model = Sequential()
 # input_dim = wordsize / input_length = max
-model.add(Embedding(8308, 300, input_length=304))
+model.add(Embedding(2810, 300, input_length=170))
 model.add(Conv1D(32, kernel_size=5, padding='same', activation='relu'))
 model.add(MaxPooling1D(pool_size=1))
 model.add(LSTM(128, activation='tanh', return_sequences=True))
@@ -21,7 +21,7 @@ model.add(LSTM(64, activation='tanh'))
 model.add(Dropout(0.3))
 model.add(Flatten())
 model.add(Dense(128, activation='relu'))
-model.add(Dense(24, activation='softmax'))      # 카테고리 수 : 24
+model.add(Dense(6, activation='softmax'))      # Dense = 카테고리 수
 model.summary()
 
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
