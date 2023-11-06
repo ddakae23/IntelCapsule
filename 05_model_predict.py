@@ -44,12 +44,12 @@ with open('./models/nutrients_token.pickle', 'rb') as f:
 
 tokened_x = token.texts_to_sequences(X)
 
-# 최대 길이를 21자로 제한
+# 최대 길이 제한
 for i in range(len(tokened_x)):
-    if len(tokened_x[i]) > 304:
-        tokened_x[i] = tokened_x[i][:305]
-x_pad = pad_sequences(tokened_x, 304)
-model = load_model('./models/nutrients_category_classification_model_0.34671372175216675.h5')
+    if len(tokened_x[i]) > 170:
+        tokened_x[i] = tokened_x[i][:171]
+x_pad = pad_sequences(tokened_x, 170)
+model = load_model('./models/nutrients_category_classification_model_0.7203791737556458.h5')
 
 preds = model.predict(x_pad)
 predicts = []
@@ -74,6 +74,6 @@ for i in range(len(df)):    # 오답 확인
     if df['category'][i] not in df['predict'][i]:
         print(df.iloc[i])
 
-for i in range(len(df)):    # 정답 확인
-    if df['category'][i] in df['predict'][i]:
-        print(df.iloc[i])
+# for i in range(len(df)):    # 정답 확인
+#     if df['category'][i] in df['predict'][i]:
+#         print(df.iloc[i])
