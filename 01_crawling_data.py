@@ -36,11 +36,11 @@ for i in range(len(category)):                          # 카테고리 변경
     titles = []
     product_names = []
 
-    for j in range(1, 5):                   # 이후 예측 데이터를 위해 최대 페이지 수를 5 페이지로 제한
+    for j in range(6, 7):                   # 이후 예측 데이터를 위해 최대 페이지 수를 5 페이지로 제한
         section_url = url + 'c/{}?p={}'.format(category[i], j)
         driver.get(section_url)             # 페이지 변경
         time.sleep(3)
-        if i == 0 and j == 1:               # 크롬 첫 실행 시 쿠키 허용
+        if i == 0 and j == 6:               # 크롬 첫 실행 시 쿠키 허용
             driver.find_element(By.XPATH, '//*[@id="truste-consent-button"]').click()
             print('cookie access')
 
@@ -105,13 +105,17 @@ for i in range(len(category)):                          # 카테고리 변경
     df_nutrients = pd.concat([df_nutrients, df_nutrient], ignore_index=True)
 
     # crawling 폴더에 Nutrients_(카테고리)_(년월일).cvs 파일로 저장
-    df_nutrient.to_csv(
-        './crawling_data/nutrients_{}_{}.csv'.format(category[i], datetime.datetime.now().strftime('%Y%m%d')),
-        index=False)
+    # df_nutrient.to_csv(
+    #     './crawling_data/nutrients_{}_{}.csv'.format(category[i], datetime.datetime.now().strftime('%Y%m%d')),
+    #     index=False)
 
 # print(df_titles.head(20))  # 상위 제목 20개 출력
 df_nutrients.info()
 df_nutrients.to_csv(
-        './crawling_data/nutrients_{}.csv'.format(datetime.datetime.now().strftime('%Y%m%d')),
-        index=False)
+        './crawling_data/predict.csv'.format(datetime.datetime.now().strftime('%Y%m%d')),
+        index=False)        # 예측용 데이터
+# df_nutrients.to_csv(
+        # './crawling_data/nutrients_{}.csv'.format(datetime.datetime.now().strftime('%Y%m%d')),
+        # index=False)      # 학습용 데이터
+
 # print(df_titles['category'].value_counts())
