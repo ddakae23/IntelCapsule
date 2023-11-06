@@ -7,6 +7,7 @@ from konlpy.tag import Okt  # 한국어 형태소 분석
 from tensorflow.keras.preprocessing.text import Tokenizer  # 자연어 처리에서 입력 문장을 일정한 단위로 분할
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.utils import to_categorical  # 정수형(integer) 레이블을 원-핫 인코딩(one-hot encoding) 벡터로 변환
+from difflib import SequenceMatcher
 
 # tensorflow ver 2.7.0 downgrade!
 
@@ -16,47 +17,20 @@ okt = Okt()
 X = df['effect']
 Y = df['category']
 Z = df['name']
-
-for i in range(len(X)):
-    try:
-        X[i] = okt.morphs(X[i], stem=True)
-    except:
-        print('error okt: ', i, len(X))
-
-stopwords = pd.read_csv('./stopwords.csv', index_col=0)
-# effect 수 만큼 반복
-for i in range(len(X)):  # title 수 만큼 반복
-    try:
-        words = []
-        # i번째 줄의 길이만큼 반복
-        for j in range(len(X[i])):  # 형태소 수 만큼 반복
-            if len(X[i][j]) > 1:  # 한글자 제거
-                if X[i][j] not in list(stopwords['stopword']):  # 불용어 확인
-                    words.append(X[i][j])
-        if len(words) >= 10:  # 단어가 10개 미만일 경우 제거
-            X[i] = ' '.join(words)
-        else:
-            X[i] = None
-            Y[i] = None
-            Z[i] = None
-    except:
-        print('error stopword: ', i, len(X))
-
-print(len(X), len(Y), len(Z))
-
-from difflib import SequenceMatcher
+df_token = pd.DataFrame()
 
 Z = np.array(Z)
-# effect 데이터를 배열로 변환
-for i in range(len(Z) - 10):
+# 상품명 데이터를 배열로 변환
+for i in range(len(Z) - 48):
     if Z[i] is not None:
         fst = Z[i]
-        for j in range(i - 10, i + 10):
+        for j in range(i - 48, i + 48):
             if i != j and Z[j] is not None:
                 scd = Z[j]
                 ratio = SequenceMatcher(None, fst, scd).ratio()  # 두 제품 명을 비교하여 유사성을 구함
-                if ratio >= 0.9:  # 일치율이 90% 이상일 경우 두번째 상품 제거
-                    print('remove similar data,{} :{}'.format(j, scd))
+                if ratio >= 0.9:                            # 유사성이 90% 이상일 경우 두번째 상품 제거
+                    print('similar data,{} :{}'.format(i, fst))
+                    print('remove data,{} :{}'.format(j, scd))
                     X[j] = None
                     Y[j] = None
                     Z[j] = None
@@ -66,7 +40,30 @@ X = X.dropna()
 Y = Y.dropna()
 Z = Z.dropna()
 
-X.to_csv('./crawling_data/preprocessing.csv', index=False)
+count = 0
+stopwords = pd.read_csv('./stopwords.csv', index_col=0)
+stopwords = list(stopwords['stopword'])
+cleaned_sentences = []
+for i in range(len(X)):
+    X[i] = okt.pos(X[i], stem=True)
+    df_token = pd.DataFrame(X[i], columns=['word', 'class'])
+    df_token = df_token[((df_token['class'] == 'Noun') | (df_token['class'] == 'Verb') | (df_token['class'] == 'Adjective'))]
+
+    words = []
+    for word in df_token.word:
+        if 1 < len(word):
+            if len(words) >= 10:            # 단어가 10개 미만일 경우 제거
+                print(df_token.word[i])
+                if word not in stopwords:
+                    words.append(word)
+    cleaned_sentence = ' '.join(words)
+    cleaned_sentences.append(cleaned_sentence)
+    print(cleaned_sentence)
+
+df['cleaned_sentences'] = cleaned_sentences
+print(len(cleaned_sentences), len(Y), len(Z))
+
+df.to_csv('./crawling_data/preprocessing_test.csv', index=False)
 
 encoder = LabelEncoder()
 labeled_y = encoder.fit_transform(Y)
@@ -79,8 +76,8 @@ with open('./models/encoder.pickle', 'wb') as f:
     pickle.dump(encoder, f)
 
 token = Tokenizer()
-token.fit_on_texts(X)  # 각 형태소에 라벨 부여
-tokened_x = token.texts_to_sequences(X)  # 라벨에 리스트 부여
+token.fit_on_texts(df_token)  # 각 형태소에 라벨 부여
+tokened_x = token.texts_to_sequences(df_token)  # 라벨에 리스트 부여
 wordsize = len(token.word_index) + 1
 print("Tokened_X :", tokened_x[0:3])
 print("Wordsize :", wordsize)
@@ -103,4 +100,4 @@ print(X_train.shape, Y_train.shape)
 print(X_test.shape, Y_test.shape)
 
 xy = X_train, X_test, Y_train, Y_test
-np.save('./crawling_data/nutrients_data_max_{}_wordsize_{}'.format(len_max, wordsize), xy)
+np.save('./crawling_data/nutrients_data_max_{}_wordsize_{}_test'.format(len_max, wordsize), xy)
