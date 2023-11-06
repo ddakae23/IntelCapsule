@@ -31,34 +31,45 @@ for i in range(len(Z) - 48):
                 if ratio >= 0.9:                            # 유사성이 90% 이상일 경우 두번째 상품 제거
                     print('similar data,{} :{}'.format(i, fst))
                     print('remove data,{} :{}'.format(j, scd))
-                    X[j] = None
-                    Y[j] = None
-                    Z[j] = None
+                    df.effect[j] = None
+                    df.category[j] = None
+                    df.name[j] = None
 
-Z = pd.Series(Z)
-X = X.dropna()
-Y = Y.dropna()
-Z = Z.dropna()
+# Z = pd.Series(Z)
+# X = X.dropna()
+#
+# Y = Y.dropna()
+# Z = Z.dropna()
+df.dropna(inplace=True)
+print(len(df))
+df.reset_index(inplace=True)
+print(len(X))
+print(len(Y))
+print(len(Z))
 
 count = 0
 stopwords = pd.read_csv('./stopwords.csv', index_col=0)
 stopwords = list(stopwords['stopword'])
-cleaned_sentences = []
-for i in range(len(X)):
-    X[i] = okt.pos(X[i], stem=True)
-    df_token = pd.DataFrame(X[i], columns=['word', 'class'])
-    df_token = df_token[((df_token['class'] == 'Noun') | (df_token['class'] == 'Verb') | (df_token['class'] == 'Adjective'))]
 
-    words = []
-    for word in df_token.word:
-        if 1 < len(word):
-            if len(words) >= 10:            # 단어가 10개 미만일 경우 제거
-                print(df_token.word[i])
-                if word not in stopwords:
-                    words.append(word)
-    cleaned_sentence = ' '.join(words)
-    cleaned_sentences.append(cleaned_sentence)
-    print(cleaned_sentence)
+cleaned_sentences = []
+for i in range(len(df)):
+    if df.effect[i]:
+        tokened_x = okt.pos(df.effect[i], stem=True)
+        print(tokened_x)
+        df_token = pd.DataFrame(tokened_x, columns=['word', 'class'])
+        df_token = df_token[((df_token['class'] == 'Noun') | (df_token['class'] == 'Verb') | (df_token['class'] == 'Adjective'))]
+
+        words = []
+        for word in df_token.word:
+            if 1 < len(word):
+                if len(words) >= 10:            # 단어가 10개 미만일 경우 제거
+                    print(df_token.word[i])
+                    if word not in stopwords:
+                        words.append(word)
+        cleaned_sentence = ' '.join(words)
+        cleaned_sentences.append(cleaned_sentence)
+        print(cleaned_sentence)
+print(len(cleaned_sentences))
 
 df['cleaned_sentences'] = cleaned_sentences
 print(len(cleaned_sentences), len(Y), len(Z))
