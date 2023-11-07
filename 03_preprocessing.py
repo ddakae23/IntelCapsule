@@ -53,9 +53,10 @@ df['cleaned_sentences'] = cleaned_sentences
 
 df.drop(labels=['effect','index'], axis=1, inplace=True)
 df.dropna(inplace=True)
-df.to_csv('./crawling_data/preprocessing_test.csv', index=False)
-df.info()
-
+df.to_csv('./crawling_data/preprocessing.csv', index=False)
+# df.info()
+print(df['category'].value_counts())
+exit()
 encoder = LabelEncoder()
 labeled_y = encoder.fit_transform(df.category)
 label = encoder.classes_
@@ -86,4 +87,4 @@ print(X_train.shape, Y_train.shape)
 print(X_test.shape, Y_test.shape)
 
 xy = X_train, X_test, Y_train, Y_test
-np.save('./crawling_data/nutrients_data_max_{}_wordsize_{}_test'.format(len_max, wordsize), xy)
+np.save('./crawling_data/nutrients_data_max_{}_wordsize_{}'.format(len_max, wordsize), xy)
