@@ -11,45 +11,54 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import load_model
 
 df = pd.read_csv('./crawling_data/predict.csv')
+stopwords = pd.read_csv('./stopwords.csv', index_col=0)
+stopwords = list(stopwords['stopword'])
+
 print(df.head())
 df.info()
 
-X = df['effect']
-Y = df['category']
-
 with open('./models/encoder.pickle', 'rb') as f:        # rb : read binary
     encoder = pickle.load(f)
-labeled_y = encoder.transform(Y)                        # 주의 : fit을 할 경우 정보를 새로 받게됨
+labeled_y = encoder.transform(df.category)                        # 주의 : fit을 할 경우 정보를 새로 받게됨
 label = encoder.classes_
-
+print(label)
 onehot_y = to_categorical(labeled_y)
-# print(onehot_y)
+print(onehot_y)
 
 okt = Okt()
 
-for i in range(len(X)):
-    X[i] = okt.morphs(X[i], stem=True)
-stopwords = pd.read_csv('./stopwords.csv', index_col=0)
-
-for j in range(len(X)):                                         # title 수 만큼 반복
+cleaned_sentence = ''
+cleaned_sentences = []
+for i in range(len(df.effect)):
+    tk_x = okt.pos(df.effect[i], stem=True)
+    df_token = pd.DataFrame(tk_x, columns=['word', 'class'])
+    df_token = df_token[
+        ((df_token['class'] == 'Alpha') | (df_token['class'] == 'Noun') | (df_token['class'] == 'Verb') | (df_token['class'] == 'Adjective'))]
     words = []
-    for i in range(len(X[j])):                                  # 형태소? 수 만큼 반복
-        if len(X[j][i]) > 1:                                    # 한글자 제거
-            if X[j][i] not in list(stopwords['stopword']):      # 불용어 확인
-                words.append(X[j][i])
-    X[j] = ' '.join(words)
+    for word in df_token.word:
+        if 1 < len(word):
+            if word not in stopwords:
+                words.append(word)
+                cleaned_sentence = ' '.join(words)
+    cleaned_sentences.append(cleaned_sentence)
+df['cleaned_sentences'] = cleaned_sentences
+
+df.drop(labels='effect', axis=1, inplace=True)
+df.dropna(inplace=True)
 
 with open('./models/nutrients_token.pickle', 'rb') as f:
     token = pickle.load(f)
 
-tokened_x = token.texts_to_sequences(X)
+token.fit_on_texts(df.cleaned_sentences)            # 문자 데이터를 입력받아 리스트 형태로 변환
+tokened_x = token.texts_to_sequences(df.cleaned_sentences)
 
 # 최대 길이 제한
 for i in range(len(tokened_x)):
-    if len(tokened_x[i]) > 170:
-        tokened_x[i] = tokened_x[i][:171]
-x_pad = pad_sequences(tokened_x, 170)
-model = load_model('./models/nutrients_category_classification_model_0.7203791737556458.h5')
+    if len(tokened_x[i]) > 162:
+        tokened_x[i] = tokened_x[i][:162]
+x_pad = pad_sequences(tokened_x, 162)
+print(x_pad)
+model = load_model('./models/nutrients_category_classification_model_0.7064676880836487.h5')
 
 preds = model.predict(x_pad)
 predicts = []
@@ -74,6 +83,6 @@ for i in range(len(df)):    # 오답 확인
     if df['category'][i] not in df['predict'][i]:
         print(df.iloc[i])
 
-# for i in range(len(df)):    # 정답 확인
-#     if df['category'][i] in df['predict'][i]:
-#         print(df.iloc[i])
+for i in range(len(df)):    # 정답 확인
+    if df['category'][i] in df['predict'][i]:
+        print(df.iloc[i])
