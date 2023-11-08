@@ -13,7 +13,6 @@ for path in data_path:
 
 X = df['effect']
 Y = df['category']
-Z = df['name']
 df = df.dropna()
 
 print(df.head())
