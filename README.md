@@ -125,4 +125,4 @@ wordsize = len(token.word_index) + 1
 
 ---
 
-Contact: <iyhs1858@gmail.com> 
+Contact: <ddakae23@gmail.com> 
